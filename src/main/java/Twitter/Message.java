@@ -67,12 +67,12 @@ public class Message {
 
 
 
-        Conversion conversion = new Conversion();
+        JsonConvertor jsonConvertor = new JsonConvertor();
         for(String jsonFileName:jsonFileNames) {
 //            System.out.println("File: " + jsonFileName);
-            String json = Conversion.readFile(directory + jsonFileName);
+            String json = JsonConvertor.readFile(directory + jsonFileName);
 //            System.out.println(json);
-            Message message = conversion.twitterify(json);
+            Message message = jsonConvertor.convert(json);
             if(null == message){
                 System.err.println(json);
                 System.out.println("File: " + jsonFileName);

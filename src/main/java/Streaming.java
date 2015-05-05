@@ -1,4 +1,4 @@
-import Twitter.Conversion;
+import Twitter.JsonConvertor;
 import Twitter.Message;
 import Twitter.Properties;
 import com.twitter.hbc.ClientBuilder;
@@ -80,14 +80,14 @@ public class Streaming implements Runnable{
     public void run(){
         hosebirdClient.connect();   // Attempts to establish a connection.
 
-        Conversion conversion = new Conversion();
+        JsonConvertor jsonConvertor = new JsonConvertor();
 
         while (!hosebirdClient.isDone() && !Thread.currentThread().isInterrupted()) {
             String msg;
             try {
                 if(msgQueue.size()>0) {
                     msg = msgQueue.take();
-                    Message message = conversion.twitterify(msg);
+                    Message message = jsonConvertor.convert(msg);
                     if (null != message) {
                         messages.add(message);
 

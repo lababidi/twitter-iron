@@ -1,4 +1,4 @@
-import Twitter.Conversion;
+import Twitter.JsonConvertor;
 import Twitter.Message;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
@@ -15,20 +15,20 @@ import java.util.ArrayList;
  *
  * Created by mahmoud on 4/24/15.
  */
-public class ElasticsearchWriter {
+public class ElasticsearchWriter implements Runnable{
     Client client;
-    Conversion conversion;
+    JsonConvertor jsonConvertor;
     public ElasticsearchWriter(){
         Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "science").build();
         client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("172.20.2.2", 9301));
 
-        conversion = new Conversion();
+        jsonConvertor = new JsonConvertor();
 
     }
 
     public void write(Message message){
         IndexRequestBuilder builder = client.prepareIndex("twitter", "tweet");
-        String json = conversion.stringify(message);
+        String json = jsonConvertor.convert(message);
 //        System.out.println(json);
         IndexResponse response = builder.setSource(json).execute().actionGet();
         System.out.println(response);
@@ -49,12 +49,12 @@ public class ElasticsearchWriter {
 
 
 
-        Conversion conversion = new Conversion();
+        JsonConvertor jsonConvertor = new JsonConvertor();
         for(String jsonFileName:jsonFileNames) {
 //            System.out.println("File: " + jsonFileName);
-            String json = Conversion.readFile(directory + jsonFileName);
+            String json = JsonConvertor.readFile(directory + jsonFileName);
 //            System.out.println(json);
-            Message message = conversion.twitterify(json);
+            Message message = jsonConvertor.convert(json);
             if(null == message){
                 System.err.println(json);
                 System.out.println("File: " + jsonFileName);
@@ -78,6 +78,8 @@ public class ElasticsearchWriter {
     }
 
 
+    @Override
+    public void run() {
 
-
+    }
 }

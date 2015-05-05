@@ -1,3 +1,5 @@
+package Spout;
+
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
@@ -5,17 +7,17 @@ import java.io.IOException;
 /**
  * Created by mahmoud on 4/27/15.
  */
-public class RetrieverAMQP implements Runnable{
+public class AMQP implements Runnable{
     private QueueingConsumer consumer;
 
-    public RetrieverAMQP(AMQPSettings settings){
+    public AMQP(AMQPSettings settings){
 
-        AMQP.BasicProperties.Builder bob = new AMQP.BasicProperties.Builder();
-        AMQP.BasicProperties minBasic = bob.build();
-        AMQP.BasicProperties minPersistentBasic = bob.deliveryMode(2).build();
-        AMQP.BasicProperties persistentBasic
+        com.rabbitmq.client.AMQP.BasicProperties.Builder bob = new com.rabbitmq.client.AMQP.BasicProperties.Builder();
+        com.rabbitmq.client.AMQP.BasicProperties minBasic = bob.build();
+        com.rabbitmq.client.AMQP.BasicProperties minPersistentBasic = bob.deliveryMode(2).build();
+        com.rabbitmq.client.AMQP.BasicProperties persistentBasic
                 = bob.priority(0).contentType("application/octet-stream").build();
-        AMQP.BasicProperties persistentTextPlain = bob.contentType("text/plain").build();
+        com.rabbitmq.client.AMQP.BasicProperties persistentTextPlain = bob.contentType("text/plain").build();
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUsername(settings.user);//(String) conf.get("spout.amqp.user"));
@@ -29,7 +31,7 @@ public class RetrieverAMQP implements Runnable{
             Channel channel = conn.createChannel();
             String routingKey = "storm";
             channel.exchangeDeclare(settings.exchange, "direct", true);
-            AMQP.Queue.DeclareOk queue = channel.queueDeclare();
+            com.rabbitmq.client.AMQP.Queue.DeclareOk queue = channel.queueDeclare();
             String queueName = queue.getQueue();
             channel.queueBind(queueName, settings.exchange, routingKey);
             consumer = new QueueingConsumer(channel);

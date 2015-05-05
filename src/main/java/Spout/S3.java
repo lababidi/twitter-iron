@@ -1,3 +1,5 @@
+package Spout;
+
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
@@ -5,23 +7,19 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 
 import java.util.UUID;
 
-/**
- *
- * Created by mahmoud on 4/24/15.
- */
-public class RetrieverS3 {
+
+public class S3 {
 
     public AWSCredentials credentials;
     public AmazonS3 s3;
     public String bucketName;
 
-    public RetrieverS3() {
+    public S3() {
 
         try {
             credentials = new ProfileCredentialsProvider().getCredentials();
@@ -42,7 +40,7 @@ public class RetrieverS3 {
         System.out.println("===========================================\n");
     }
 
-    public RetrieverS3(String bucketName){
+    public S3(String bucketName){
         this();
         setBucketName(bucketName);
     }
@@ -56,7 +54,6 @@ public class RetrieverS3 {
     }
 
     public void delete(String key){
-//        s3.deleteObject(new DeleteObjectRequest(bucketName, key));
         s3.deleteObject(bucketName, key);
     }
 
