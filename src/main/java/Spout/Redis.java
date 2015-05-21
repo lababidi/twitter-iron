@@ -1,10 +1,10 @@
-package Spout;
+package spout;
 
-import Twitter.JsonConvertor;
-import Twitter.Message;
 import redis.clients.jedis.Jedis;
+import twitter.JsonConvertor;
+import twitter.Message;
 
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -14,14 +14,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Redis implements Runnable{
     Jedis redis;
     JsonConvertor convertor;
-    Queue<Message> queue = new LinkedBlockingQueue<Message>();
+    BlockingQueue<String> queue = new LinkedBlockingQueue<>();
     boolean on;
 
     public Redis(){
         this("localhost");
     }
 
-    public Redis(Queue<Message> queue){
+    public Redis(BlockingQueue<String> queue){
         this();
         this.queue = queue;
     }
@@ -35,12 +35,12 @@ public class Redis implements Runnable{
 
     public Message get(){
         String json = redis.rpop("twitter");
-        System.out.println(json);
+        if(json!=null)System.out.println(json);
         return json!=null? convertor.convert(json) : null;
     }
 
     public void add(){
-        queue.add(get());
+        queue.add(redis.rpop("twitter"));//get());
     }
 
     public static void main(String[] args){
@@ -54,9 +54,10 @@ public class Redis implements Runnable{
     @Override
     public void run() {
         while(on){
-            Message message = get();
-            if(message!=null)
-                queue.add(message);
+            queue.add(redis.rpop("twitter"));
+//            Message message = get();
+//            if(message!=null)
+//                queue.add(message);
         }
     }
 

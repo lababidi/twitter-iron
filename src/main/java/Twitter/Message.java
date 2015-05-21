@@ -1,4 +1,4 @@
-package Twitter;
+package twitter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * Created by mahmoud on 1/29/15.
  */
-public class Message {
+public class Message{
     public long id;
     public String idStr;
 
@@ -46,11 +46,12 @@ public class Message {
         user = new User();
     }
 
-    public void fixGeoJson(){
+    public Message fixGeoJson(){
         if(place!=null && place.boundingBox!=null && place.boundingBox.coordinates.get(0).size()!=5){
             ArrayList<Double> first =  place.boundingBox.coordinates.get(0).get(0);
             place.boundingBox.coordinates.get(0).add(first);
         }
+        return this;
     }
 
     public static void main( String[] args){

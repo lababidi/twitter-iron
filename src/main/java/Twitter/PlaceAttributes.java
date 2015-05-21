@@ -1,4 +1,4 @@
-package Twitter;
+package twitter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

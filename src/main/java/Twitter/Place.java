@@ -1,4 +1,4 @@
-package Twitter;
+package twitter;
 
 /**
  * Created by mahmoud on 1/30/15.

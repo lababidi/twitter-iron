@@ -1,4 +1,4 @@
-package Twitter;
+package twitter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 /**
  *
@@ -45,6 +46,14 @@ public class JsonConvertor {
         return message;
     }
 
+    public  Iterable<Message> convertStrings(Iterable<String> ins){
+        ArrayList<Message> outs = new ArrayList<>();
+        for(String in:ins){
+            outs.add(convert(in));
+        }
+        return outs;
+    }
+
     public String convert(Message message){
         try {
             return mapper.writeValueAsString(message);
@@ -52,6 +61,14 @@ public class JsonConvertor {
             e.printStackTrace();
         }
         return "{}";
+    }
+
+    public  Iterable<String> convertMessages(Iterable<Message> ins){
+        ArrayList<String> outs = new ArrayList<>();
+        for(Message in:ins){
+            outs.add(convert(in));
+        }
+        return outs;
     }
 
     public static String readFile(String fn){

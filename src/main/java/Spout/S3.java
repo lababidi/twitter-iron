@@ -1,4 +1,4 @@
-package Spout;
+package spout;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;

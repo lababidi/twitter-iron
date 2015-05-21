@@ -1,4 +1,4 @@
-package Spout;
+package spout;
 
 /**
  * Created by mahmoud on 4/27/15.
