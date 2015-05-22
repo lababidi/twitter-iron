@@ -6,13 +6,13 @@ import twitter.Processor;
 
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by mahmoud on 5/21/15.
  */
 public abstract class Writer implements Runnable, WriterInterface {
 
-//    private Writer writer;
     private BlockingQueue<String> queue;
     private JsonConvertor jsonConvertor;
     private Processor processor;
@@ -20,12 +20,16 @@ public abstract class Writer implements Runnable, WriterInterface {
     private boolean runBatch;
 
     public Writer(BlockingQueue<String> q){
+        this();
         queue = q;
+    }
+
+    public Writer() {
         jsonConvertor = new JsonConvertor();
         processor = new Processor();
-//        this.writer = writer;
         batchMax = 10;
         runBatch = false;
+        queue = new LinkedBlockingDeque<>();
     }
 
     @Override
@@ -54,4 +58,13 @@ public abstract class Writer implements Runnable, WriterInterface {
             }
         }
     }
+
+    public void add(String message){
+        queue.add(message);
+    }
+
+
+    public abstract void write(String message);
+
+    public abstract void write(Iterable<String> messages);
 }

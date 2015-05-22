@@ -15,15 +15,15 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * Created by mahmoud on 4/24/15.
  */
-public class Elasticsearch extends Writer {
+public class File extends Writer {
     Client client;
     LinkedBlockingQueue<String> messages;
     String indexName, indexType;
     String clusterName = "elasticsearch_mahmoud";
     String address = "127.0.0.1";
-    int port = 9300;
+    int port = 9200;
 
-    public Elasticsearch(BlockingQueue<String> queue){
+    public File(BlockingQueue<String> queue){
         super(queue);
         Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", clusterName).build();
         client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(address, port));
@@ -31,12 +31,10 @@ public class Elasticsearch extends Writer {
         indexType = "tweet";
     }
 
-    public Elasticsearch() {
+    public File() {
         super();
-        System.out.println(address + port + clusterName);
-        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", clusterName).build();
+        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "science").build();
         client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(address, port));
-        System.out.println(client);
         indexName = "twitter";
         indexType = "tweet";
     }

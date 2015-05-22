@@ -1,5 +1,6 @@
 package twitter;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -14,9 +15,13 @@ public class Properties {
     public Properties(String configName)  {
 
         java.util.Properties prop = new java.util.Properties();
+        InputStream inputStream;
 
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(configName);
-
+        try {
+            inputStream = new FileInputStream(configName);
+        }catch (Exception e){
+            inputStream = getClass().getClassLoader().getResourceAsStream(configName);
+        }
         if (inputStream != null) {
             try {
                 prop.load(inputStream);

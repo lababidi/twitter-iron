@@ -9,7 +9,11 @@ import com.twitter.hbc.core.event.Event;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
-import twitter.Message;
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.Namespace;
+import sink.WriterGroup;
 import twitter.Properties;
 
 import java.util.ArrayList;
@@ -28,14 +32,14 @@ public class Streaming implements Runnable{
 
     BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
     BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
-    private boolean stop;
+//    private boolean stop;
 
     public Streaming(BlockingQueue<String> messages, Properties p) {
         /** Set up your blocking queues: Be sure to size these properly based on expected TPS of your stream */
 //        msgQueue = new LinkedBlockingQueue<>(1000000);
 //        eventQueue = new LinkedBlockingQueue<>(1000);
         this.msgQueue = messages;
-        stop = false;
+//        stop = false;
 
 /** Declare the host you want to connect to, the endpoint, and authentication (basic auth or oauth) */
 
@@ -78,11 +82,27 @@ public class Streaming implements Runnable{
         hosebirdClient.connect();
     }
 
-    void stop(){stop = true;}
+//    void stop(){stop = true;}
 
-    public static void main(){
-        BlockingQueue<Message> queue;
+    public static void main(String[] args){
+        ArgumentParser parser = ArgumentParsers.newArgumentParser("Streaming");
+        parser.addArgument("-p","--prop");
+        Namespace ns;
+        try {
+            ns = parser.parseArgs(args);
+            String propFileName = ns.getString("prop");
 
+            BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+            Properties p = new Properties(propFileName);
+            Streaming streaming = new Streaming(queue, p);
+            WriterGroup writerGroup = new WriterGroup(queue);
+            streaming.go();
+            System.out.print("go");
+            new Thread(writerGroup).start();
+        } catch (ArgumentParserException e) {
+            parser.handleError(e);
+            System.exit(1);
+        }
     }
 
 

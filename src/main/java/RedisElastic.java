@@ -1,5 +1,4 @@
 import spout.Redis;
-import sink.Elasticsearch;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -12,9 +11,9 @@ public class RedisElastic {
 
         LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
         Thread spout = new Thread(new Redis(queue));
-        Thread sink = new Thread(new Elasticsearch(queue));
+//        Thread sink = new Thread(new Elasticsearch(queue));
         spout.start();
-        sink.start();
+//        sink.start();
 
     }
 }
