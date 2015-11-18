@@ -13,7 +13,7 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
-import sink.WriterGroup;
+import writer.WriterGroup;
 import twitter.Properties;
 
 import java.util.ArrayList;
@@ -54,8 +54,8 @@ public class Streaming implements Runnable{
 
         ArrayList<Location> locations = new ArrayList<>();
         locations.add(new Location(
-                new Location.Coordinate(-75.4595947265625, 39.791654835253425),
-                new Location.Coordinate(-72.9986572265625, 41.31082388091818)));
+                new Location.Coordinate(p.swLon, p.swLat),
+                new Location.Coordinate(p.neLon, p.neLat)));
         locations.add(new Location(
                 new Location.Coordinate(122.1240234375, 29.53522956294847),
                 new Location.Coordinate(152.8857421875, 55.37911044801047)));

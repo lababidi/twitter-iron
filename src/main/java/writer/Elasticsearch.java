@@ -1,4 +1,4 @@
-package sink;
+package writer;
 
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
@@ -8,41 +8,37 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  *
  * Created by mahmoud on 4/24/15.
  */
-public class File extends Writer {
+public class Elasticsearch extends Writer {
     Client client;
     LinkedBlockingQueue<String> messages;
-    String indexName, indexType;
+    String indexName, docType;
     String clusterName = "elasticsearch_mahmoud";
     String address = "127.0.0.1";
-    int port = 9200;
+    int port = 9300;
 
-    public File(BlockingQueue<String> queue){
-        super(queue);
-        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", clusterName).build();
-        client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(address, port));
-        indexName = "twitter";
-        indexType = "tweet";
-    }
-
-    public File() {
+    public Elasticsearch(String address, int port, String clusterName, String indexName, String docType) {
         super();
-        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "science").build();
+        this.address = address;
+        this.port = port;
+        this.clusterName = clusterName;
+
+//        System.out.println(address + port + clusterName);
+        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", this.clusterName).build();
         client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(address, port));
-        indexName = "twitter";
-        indexType = "tweet";
+        this.indexName = indexName; //"twitter";
+        this.docType = docType; //"tweet";
     }
 
 
     //    @Override
     public void write(String json){
-        IndexRequestBuilder builder = client.prepareIndex(indexName, indexType);
+        IndexRequestBuilder builder = client.prepareIndex(indexName, docType);
         if(json!=null)System.out.println(json);
         IndexResponse response = builder.setSource(json).execute().actionGet();
         System.out.println(response);

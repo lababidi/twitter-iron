@@ -1,4 +1,4 @@
-package sink;
+package writer;
 
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
@@ -15,7 +15,7 @@ public class WriterGroup implements Runnable{
     public WriterGroup(BlockingQueue<String> queue){
         this.queue = queue;
         this.writers = new ArrayList<>();
-        writers.add(new Elasticsearch());
+        writers.add(new Elasticsearch("localhost", 9200, "elasticsearch_mahmoud", "twitter", "tweet" ));
     }
 
     @Override

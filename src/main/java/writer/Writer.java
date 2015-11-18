@@ -1,4 +1,4 @@
-package sink;
+package writer;
 
 import twitter.JsonConvertor;
 import twitter.Message;
@@ -9,9 +9,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
+ *
  * Created by mahmoud on 5/21/15.
  */
-public abstract class Writer implements Runnable, WriterInterface {
+public abstract class Writer implements Runnable {
 
     private BlockingQueue<String> queue;
     private JsonConvertor jsonConvertor;

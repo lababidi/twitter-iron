@@ -10,6 +10,7 @@ import java.io.InputStream;
  */
 public class Properties {
 
+    public float swLat, swLon, neLat, neLon;
     public String consumerKey, consumerSecret, authKey, authSecret;
 
     public Properties(String configName)  {
@@ -29,6 +30,10 @@ public class Properties {
                 consumerSecret = prop.getProperty("consumer_secret");
                 authKey = prop.getProperty("auth_key");
                 authSecret = prop.getProperty("auth_secret");
+                swLon = Float.parseFloat(prop.getProperty("sw_lon"));
+                swLat = Float.parseFloat(prop.getProperty("sw_lat"));
+                neLon = Float.parseFloat(prop.getProperty("ne_lon"));
+                neLat = Float.parseFloat(prop.getProperty("ne_lat"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
