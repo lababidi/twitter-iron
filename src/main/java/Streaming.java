@@ -13,10 +13,11 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
-import writer.WriterGroup;
 import twitter.Properties;
+import writer.File;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -35,9 +36,6 @@ public class Streaming implements Runnable{
 //    private boolean stop;
 
     public Streaming(BlockingQueue<String> messages, Properties p) {
-        /** Set up your blocking queues: Be sure to size these properly based on expected TPS of your stream */
-//        msgQueue = new LinkedBlockingQueue<>(1000000);
-//        eventQueue = new LinkedBlockingQueue<>(1000);
         this.msgQueue = messages;
 //        stop = false;
 
@@ -56,9 +54,9 @@ public class Streaming implements Runnable{
         locations.add(new Location(
                 new Location.Coordinate(p.swLon, p.swLat),
                 new Location.Coordinate(p.neLon, p.neLat)));
-        locations.add(new Location(
-                new Location.Coordinate(122.1240234375, 29.53522956294847),
-                new Location.Coordinate(152.8857421875, 55.37911044801047)));
+//        locations.add(new Location(
+//                new Location.Coordinate(122.1240234375, 29.53522956294847),
+//                new Location.Coordinate(152.8857421875, 55.37911044801047)));
         endpoint.locations(locations);
 
         Authentication hosebirdAuth = new OAuth1(p.consumerKey, p.consumerSecret, p.authKey, p.authSecret);
@@ -87,18 +85,27 @@ public class Streaming implements Runnable{
     public static void main(String[] args){
         ArgumentParser parser = ArgumentParsers.newArgumentParser("Streaming");
         parser.addArgument("-p","--prop");
+        parser.addArgument("-o","--output");
         Namespace ns;
         try {
             ns = parser.parseArgs(args);
-            String propFileName = ns.getString("prop");
+            String outFile = ns.getString("output");
+            String propFiles = ns.getString("prop");
+//            String propFiles = "world/10.config,world/11.config";
+//            String propFiles = "world/9.config,world/10.config";
+            String [] propFileNames = propFiles.split(",");
+            System.out.println(Arrays.toString(propFileNames));
+//            System.exit(1);
 
             BlockingQueue<String> queue = new LinkedBlockingQueue<>();
-            Properties p = new Properties(propFileName);
-            Streaming streaming = new Streaming(queue, p);
-            WriterGroup writerGroup = new WriterGroup(queue);
-            streaming.go();
-            System.out.print("go");
-            new Thread(writerGroup).start();
+            ArrayList<Streaming> streamingList = new ArrayList<>();
+            for(String propFile: propFileNames) {
+                Properties p = new Properties(propFile);
+                streamingList.add(new Streaming(queue, p));
+            }
+            File fileWriter = new File(queue, outFile);
+            streamingList.forEach(Streaming::go);
+            new Thread(fileWriter).start();
         } catch (ArgumentParserException e) {
             parser.handleError(e);
             System.exit(1);

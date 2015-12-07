@@ -8,4 +8,7 @@ public class Media {
     public MediaSizes sizes;
     public int[] indices;
     public long id, sourceStatusId;
+    public VideoInfo videoInfo;
+    public long sourceUserId;
+    public String sourceUserIdStr;
 }

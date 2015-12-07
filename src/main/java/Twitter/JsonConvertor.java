@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.sun.istack.internal.Nullable;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  *
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 public class JsonConvertor {
 
     ObjectMapper mapper;
+    Processor processor;
 
     public JsonConvertor(){
         String dateFormat = "EEE MMM dd HH:mm:ss ZZZZZ YYYY"; //'Sat Nov 08 10:42:09 +0000 2014'
@@ -25,10 +28,13 @@ public class JsonConvertor {
         mapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
         mapper.configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
         mapper.setDateFormat(new SimpleDateFormat(dateFormat));
+
+        processor = new Processor();
     }
+    @Nullable
     public Message convert(String jsonString){
         Message message = new Message();
 
@@ -51,6 +57,7 @@ public class JsonConvertor {
         for(String in:ins){
             outs.add(convert(in));
         }
+        outs.removeAll(Collections.singleton(null));
         return outs;
     }
 
@@ -87,5 +94,21 @@ public class JsonConvertor {
         }
 
         return content;
+    }
+
+    public Iterable<String> process(Iterable<String> stringMessages){
+        Iterable<Message> messages = convertStrings(stringMessages);
+        messages = processor.process(messages);
+        return convertMessages(messages);
+    }
+
+    public String process(String stringMessage){
+        Message message = convert(stringMessage);
+        if (null != message) {
+
+            message = processor.process(message);
+            return convert(message);
+        }
+        else return null;
     }
 }

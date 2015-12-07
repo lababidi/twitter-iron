@@ -33,8 +33,17 @@ public class Message{
     public Place place;
     public Geo geo;
     public Coordinates coordinates;
-    public Entities entities, extendedEntities;
+    public Entities entities;
+//    @JsonIgnore
+    public Entities extendedEntities;
     public User user;
+
+    public boolean isQuoteStatus;
+    public long quotedStatusId;
+    public String quotedStatusIdStr;
+    public Message quotedStatus;
+    public Scopes scopes;
+    public ArrayList<String> withheldInCountries;
 
     public Message(){
         super();

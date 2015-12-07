@@ -1,7 +1,6 @@
 package writer;
 
 import twitter.JsonConvertor;
-import twitter.Message;
 import twitter.Processor;
 
 import java.util.ArrayList;
@@ -14,11 +13,12 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public abstract class Writer implements Runnable {
 
-    private BlockingQueue<String> queue;
+    private final int batchMin;
+    public BlockingQueue<String> queue;
     private JsonConvertor jsonConvertor;
     private Processor processor;
     private int batchMax;
-    private boolean runBatch;
+    public boolean runBatch;
 
     public Writer(BlockingQueue<String> q){
         this();
@@ -28,7 +28,8 @@ public abstract class Writer implements Runnable {
     public Writer() {
         jsonConvertor = new JsonConvertor();
         processor = new Processor();
-        batchMax = 10;
+        batchMax = 1000;
+        batchMin = 200;
         runBatch = false;
         queue = new LinkedBlockingDeque<>();
     }
@@ -39,18 +40,17 @@ public abstract class Writer implements Runnable {
             try {
                 if(runBatch) {
                     ArrayList<String> batch = new ArrayList<>();
-                    queue.drainTo(batch, batchMax);
-                    Iterable<Message> messages = jsonConvertor.convertStrings(batch);
-                    messages = processor.process(messages);
-                    Iterable<String> jsons = jsonConvertor.convertMessages(messages);
-                    write(jsons);
+                    if(queue.size()>batchMin && queue.drainTo(batch, batchMax)!=0) {
+                        System.out.println(batch.size());
+                        write(jsonConvertor.process(batch));
+//                        System.out.println("Thread " + Thread.currentThread().getId());
+                    }
+                    else
+                        Thread.sleep(1000);
                 }else{
-                    String msg = queue.take();
-                    Message message = jsonConvertor.convert(msg);
-                    if (null != message) {
-                        message = processor.process(message);
-                        String json = jsonConvertor.convert(message);
-                        write(json);
+                    String msg = jsonConvertor.process(queue.take());
+                    if (null != msg) {
+                        write(msg);
                     }
                 }
             } catch (InterruptedException e) {
